@@ -16,7 +16,7 @@ function! s:toc.sink(selected) abort
   noautocmd call cursor(lnum, column)
 endfunction
 
-call clap#register('toc', s:toc)
+let g:clap_provider_toc = s:toc
 
 let &cpoptions = s:save_cpo
 unlet s:save_cpo
