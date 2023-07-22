@@ -25,8 +25,15 @@ endfunction
 
 function s:display_toc() abort
   let l:toc = s:toc_source()
+  let curwin = winnr()
   let l:toc_window_width = max(map(copy(l:toc), {_, val -> strdisplaywidth(val[2])})) + 2
-  let l:toc_window_width = max([l:toc_window_width, 20])
+  let min_toc_window_width = 20
+  if getwinvar(curwin, '&number') || getwinvar(curwin, '&relativenumber')
+    let number_width = getwinvar(curwin, '&numberwidth')
+    let l:toc_window_width = l:toc_window_width + number_width
+    let min_toc_window_width = min_toc_window_width + number_width
+  endif
+  let l:toc_window_width = max([l:toc_window_width, min_toc_window_width])
 
   let s:headers = []
   let header_texts = []
