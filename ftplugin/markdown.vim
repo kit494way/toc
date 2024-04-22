@@ -10,7 +10,18 @@ set cpoptions&vim
 
 function s:toc_source() abort
   let res = systemlist('toc --vimgrep '.expand('%:p'))
-  return map(res, {_, val -> split(val, ':')[1:]})
+  return map(res, {_, val -> s:split_toc(val)})
+endfunction
+
+function s:split_toc(line) abort
+  let xs = split(a:line, ':')
+  if len(xs) == 4
+    return xs[1:]
+  endif
+
+  let [_, lnum, col] = xs[:2]
+  let text = join(xs[3:], ':')
+  return [lnum, col, text]
 endfunction
 
 function s:goto_cur_header() abort
@@ -40,7 +51,7 @@ function s:display_toc() abort
   let curbuf = bufnr()
   for [lnum, col, text] in l:toc
     let [s, _, _] = matchstrpos(text, '#\+', 0)
-    let header_text = substitute(s[1:], '#', ' ', 'g').substitute(text, '^#\+\s\+', '', '')
+    let header_text = substitute(s[1:], '#', ' ', 'g')..substitute(text, '^#\+\s\+', '', '')
     call add(s:headers, {
       \ 'buf': curbuf,
       \ 'lnum': lnum,
